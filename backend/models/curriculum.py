@@ -13,13 +13,17 @@ class Curriculum:
         """
         Guarda o actualiza el CV en la base de datos.
         """
+        existing_cv = self.find_by_email(self.user_email)
         cv_data = {
             "user_email": self.user_email,
             "education": self.education,
             "experience": self.experience,
             "skills": self.skills
         }
-        self.COLLECTION.insert_one(cv_data)
+        if existing_cv:
+            self.update()
+        else:
+            self.COLLECTION.insert_one(cv_data)
 
     @classmethod
     def find_by_email(cls, email):
@@ -27,3 +31,21 @@ class Curriculum:
         Busca un CV por el email del usuario.
         """
         return cls.COLLECTION.find_one({"user_email": email})
+
+    def update(self):
+        """
+        Actualiza un CV existente en la base de datos.
+        """
+        updated_data = {
+            "education": self.education,
+            "experience": self.experience,
+            "skills": self.skills
+        }
+        self.COLLECTION.update_one({"user_email": self.user_email}, {"$set": updated_data})
+
+    @classmethod
+    def delete_by_email(cls, email):
+        """
+        Elimina un CV usando el email.
+        """
+        cls.COLLECTION.delete_one({"user_email": email})
