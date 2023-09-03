@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - "27017:27017"
+    volumes:
+      - dbdata6:/data/db
+
+    networks:
+      gpt-network:
+        ipv4_address: 192.168.0.2
+
+volumes:
+  dbdata6:
+
+networks:
+  gpt-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.0.0/29
+          gateway: 192.168.0.1
